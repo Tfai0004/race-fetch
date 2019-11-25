@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!--
+  user info here
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>MAD9014 Hybrid 7</title>
+    <style>
+
+      header {
+        background-color: hsla(0, 0%, 20%, 1);
+        color: hsla(0, 0%, 80%, 1);
+      }
+
+      header > * {
+        display: inline-block;
+        width: 33.33%;
+      }
+
+      .character {
+        display: inline-block;
+        border-style: groove;
+        width: 20%;
+        height: 120px;
+      }
+
+      .character > #charId {
+        font-size: 75%;
+        opacity: 75%;
+      }
+
+      .character > #charName {
+        font-style: italic;
+      }
+    </style>
+    <script>
+      let print = console.log;
+
+      let process = (promise) => {
+        promise.then( dataArray => {
+          print(dataArray);
+
+          let data = dataArray[0];
+
+          let title = document.createElement("h1");
+          title.id = "title";
+          title.textContent = data.type;
+
+          let date = document.createElement("h5");
+          date.id = "date";
+          date.textContent = Date(data._createdOn).toString();
+
+          let id = document.createElement("h5");
+          id.id = "id";
+          id.textContent = data._id;
+
+          let header = document.getElementById("header");
+          header.appendChild(title);
+          header.appendChild(date);
+          header.appendChild(id);
+
+          let main = document.getElementById("main");
+          data.data.forEach((char, index) => {
+            let character = document.createElement("div");
+            character.id = `character${index}`;
+            character.classList.add("character");
+
+            let charId = document.createElement("p");
+            charId.id = "charId";
+            charId.textContent = `ID: ${char.id}`;
+
+            let charInfo1 = document.createElement("p");
+            let charInfo2 = document.createElement("p");
+            if (char.hasOwnProperty("first_name")) {
+              charInfo1.id = "firstName";
+              charInfo1.textContent = `First Name: ${char.first_name}`;
+              charInfo2.id = "lastName";
+              charInfo2.textContent = `Last Name: ${char.last_name}`;
+            }
+            else {
+              charInfo1.id = "actorName";
+              charInfo1.textContent = `Actor: ${char.actor}`;
+              charInfo2.id = "charName";
+              charInfo2.textContent = `Character: ${char.character}`;
+            }
+
+            character.appendChild(charId);
+            character.appendChild(charInfo1);
+            character.appendChild(charInfo2);
+
+            main.appendChild(character);
+          });
+        });
+      };
+
+      let data1 = fetch("https://jsonbox.io/box_7ebd8cb0b8fb187873ef");
+      let data2 = fetch("https://jsonbox.io/box_82b5a4aa7a4a71abaa80");
+
+      let start = () => {
+        Promise.race([data1, data2])
+        .then( result => {
+          process( result.json() );
+        })
+        .catch( error => {
+          print( error.message );
+        });
+      }
+
+      window.addEventListener("DOMContentLoaded", start);
+    </script>
+  </head>
+  <body>
+    <header id="header">
+    </header>
+    <main id="main">
+    </main>
+  </body>
+</html>
